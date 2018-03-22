@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"log"
 	"net"
@@ -46,7 +45,6 @@ func main() {
 	})
 	if err != nil {
 		log.Fatalf("failed to tail %s: %v", "ips.log", err)
-		fmt.Printf("failed to tail %s: %v\n", logFilename, err)
 	}
 
 	mux := http.NewServeMux()
@@ -80,22 +78,18 @@ func main() {
 			ipstr := ipregexp.FindString(line.Text)
 			if ipstr == "" {
 				log.Printf("failed to find IP addres in: %s", line.Text)
-				fmt.Printf("failed to find IP addres in: %s\n", line.Text)
 				continue
 			} else {
 				log.Printf("Found IP address: %s", ipstr)
-				fmt.Printf("Found IP address: %s\n", ipstr)
 			}
 			ip := net.ParseIP(ipstr)
 
 			res := mmrecord{}
 			if err := gdb.Lookup(ip, &res); err != nil {
 				log.Printf("failed to lookup ip %s location: %v", ipstr, err)
-				fmt.Printf("failed to lookup ip %s location: %v\n", ipstr, err)
 				continue
 			} else {
 				log.Printf("found location: %f, %f", res.Location.Latitude, res.Location.Longitude)
-				fmt.Printf("found location: %f, %f\n", res.Location.Latitude, res.Location.Longitude)
 			}
 			b.pub([]float64{res.Location.Latitude, res.Location.Longitude})
 		}
