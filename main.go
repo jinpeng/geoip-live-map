@@ -72,7 +72,11 @@ func main() {
 		wg.Add(1)
 		defer wg.Done()
 
-		ipregexp := regexp.MustCompile(`\d+\.\d+\.\d+\.\d+`)
+		ipregexpStr := os.Getenv("IP_REGEXP")
+		if ipregexpStr == "" {
+			ipregexpStr = `\d+\.\d+\.\d+\.\d+`
+		}
+		ipregexp := regexp.MustCompile(ipregexpStr)
 
 		for line := range t.Lines {
 			ipstr := ipregexp.FindString(line.Text)
