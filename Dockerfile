@@ -1,5 +1,5 @@
 FROM golang:1 as builder
-WORKDIR $GOPATH/src/github.com/ramanenka/geoip-live-map
+WORKDIR $GOPATH/src/github.com/jinpeng/geoip-live-map
 RUN set -ex \
   && GEOIP_ARCHIVE_URL=http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz \
   && MD5=$(wget -O - $GEOIP_ARCHIVE_URL.md5 2>/dev/null) \
@@ -14,8 +14,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o 
 FROM scratch
 ENV HTTP_LISTEN_ON=:80
 EXPOSE $HTTP_LISTEN_ON
-WORKDIR /glm
+WORKDIR /app
 COPY index.html index.html
 COPY --from=builder /tmp/geoip-live-map ./bin/
 COPY --from=builder /tmp/GeoLite2-City.mmdb ./
-CMD ["/glm/bin/geoip-live-map"]
+CMD ["/app/bin/geoip-live-map"]
